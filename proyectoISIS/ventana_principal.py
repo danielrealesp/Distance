@@ -10,9 +10,10 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
+count = 0
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
+        self.main = MainWindow
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 598)
         MainWindow.setStyleSheet("  background: url(./imagenes/background.jpg);\n"
@@ -41,7 +42,7 @@ class Ui_MainWindow(object):
         self.layoutBotones.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
         self.layoutBotones.setObjectName("layoutBotones")
         self.btnCalibrar = QtWidgets.QPushButton(self.centralwidget)
-        self.btnCalibrar.clicked.connect(self.calibrar)
+        self.btnCalibrar.clicked.connect(self.iniciarCalibracion)
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
@@ -110,6 +111,10 @@ class Ui_MainWindow(object):
         self.sliderDistancia = QtWidgets.QSlider(self.centralwidget)
         self.sliderDistancia.setOrientation(QtCore.Qt.Horizontal)
         self.sliderDistancia.setObjectName("sliderDistancia")
+        self.sliderDistancia.setMinimum(30)
+        self.sliderDistancia.setMaximum(300)
+        self.sliderDistancia.setTickInterval(10)
+        self.sliderDistancia.valueChanged.connect(self.getValue)
         self.layoutSlider.addWidget(self.sliderDistancia)
         self.lblDistancia = QtWidgets.QLabel(self.centralwidget)
         font = QtGui.QFont()
@@ -140,6 +145,11 @@ class Ui_MainWindow(object):
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
+        self.progressBar = QtWidgets.QProgressBar()
+        self.layoutPrincipal.addWidget(self.progressBar)
+        self.timer = QtCore.QTimer()
+        self.timer.setInterval(1)
+        self.timer.timeout.connect(self.runProgressBar)
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -154,12 +164,27 @@ class Ui_MainWindow(object):
         self.lblDistancia.setText(_translate("MainWindow", "0"))
         self.btnRegistros.setText(_translate("MainWindow", "REGISTROS"))
     
-    def calibrar(self):
+    def runProgressBar(self):
         print("Calibrar clicked")
+        global count
+        count +=1
+        self.progressBar.setValue(count)
+        if count == 100:
+            self.timer.stop()
+            mbox = QtWidgets.QMessageBox.information(self.main, "Calibración Terminada", "La calibración terminó exitosamente")
+
+    def iniciarCalibracion(self):
+        self.timer.start()
 
     def iniciar(self):
         print("Iniciar Clicked")
+        distanciaStr = self.lblDistancia.text()
+        distancia = int(distanciaStr)
 
     def terminar(self):
         print("Terminar clicked")
+    
+    def getValue(self):
+        value = self.sliderDistancia.value()
+        self.lblDistancia.setText(str(value))
 
