@@ -9,6 +9,9 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+import os
+
+from prototipo import Distance
 
 count = 0
 class Ui_MainWindow(object):
@@ -180,6 +183,12 @@ class Ui_MainWindow(object):
         print("Iniciar Clicked")
         distanciaStr = self.lblDistancia.text()
         distancia = int(distanciaStr)
+        path1 = os.path.abspath("imagen1.jpg")
+        calculador = Distance()
+        focal = calculador.calibrarFocal(path1)
+        calculador.app(focal,distancia)
+
+
 
     def terminar(self):
         print("Terminar clicked")
